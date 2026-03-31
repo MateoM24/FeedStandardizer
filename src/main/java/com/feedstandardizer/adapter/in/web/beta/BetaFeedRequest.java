@@ -24,11 +24,11 @@ public record BetaFeedRequest(
         @NotBlank
         String eventId,
 
-        /** Present only for ODDS_CHANGE. */
+        /* Present only for ODDS_CHANGE. */
         @JsonProperty("odds")
         BetaOdds odds,
 
-        /** Present only for BET_SETTLEMENT. One of "home", "draw", "away". */
+        /* Present only for BET_SETTLEMENT. One of "home", "draw", "away". */
         @JsonProperty("result")
         String result
 ) {

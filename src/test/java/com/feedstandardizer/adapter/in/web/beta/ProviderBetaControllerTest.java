@@ -74,7 +74,7 @@ class ProviderBetaControllerTest {
         mockMvc.perform(post("/provider-beta/feed")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test

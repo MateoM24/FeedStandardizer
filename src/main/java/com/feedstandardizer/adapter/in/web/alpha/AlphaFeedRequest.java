@@ -26,11 +26,11 @@ public record AlphaFeedRequest(
         @NotBlank
         String eventId,
 
-        /** Present only for ODDS_CHANGE. Keys: "1" (home), "X" (draw), "2" (away). */
+        /* Present only for ODDS_CHANGE. Keys: "1" (home), "X" (draw), "2" (away). */
         @JsonProperty("values")
         Map<String, Double> values,
 
-        /** Present only for BET_SETTLEMENT. One of "1", "X", "2". */
+        /* Present only for BET_SETTLEMENT. One of "1", "X", "2". */
         @JsonProperty("outcome")
         String outcome
 ) {

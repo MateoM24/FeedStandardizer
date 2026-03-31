@@ -223,6 +223,25 @@ Invoke-RestMethod -Method POST -Uri "http://localhost:8080/provider-beta/feed" `
   -Body '{"type":"SETTLEMENT","event_id":"ev456","result":"away"}'
 ```
 
-## Additional ideas:
-- I would probably do Kafka topic per event type instead of sending them to a common one.
-- I would dockerize it as well of course to deploy for example Kubernetes.
+## Available endpoints
+
+| URL | Description |
+|-----|-------------|
+| `POST /provider-alpha/feed` | ProviderAlpha feed ingestion |
+| `POST /provider-beta/feed` | ProviderBeta feed ingestion |
+| `GET /swagger-ui.html` | Interactive API documentation (Swagger UI) |
+| `GET /api-docs` | Raw OpenAPI JSON spec |
+| `GET /actuator/health` | Application health check |
+| `GET /actuator/info` | Application info |
+
+---
+
+## Additional ideas
+
+- **Kafka topic per event type** — rather than a single shared topic, publish `ODDS_CHANGE` and `BET_SETTLEMENT` to separate Kafka topics. Consumers can subscribe to only what they need.
+- **Containerization** — Dockerize the service and deploy to Kubernetes for horizontal scaling and resilience.
+- **Message ordering guarantee** — In live sports betting, odds update rapidly. If message #5 arrives after #6 due to network reordering, processing it would roll back to stale odds. Production solution: include a sequence number per event and discard late arrivals.
+- **Idempotency / deduplication** — Providers retry on timeout. Processing the same `BET_SETTLEMENT` twice could cause downstream issues. Solution: track processed `eventId + messageType` pairs with a short TTL in Redis.
+- **Dead Letter Queue (DLQ)** — Currently a failed message is logged and silently dropped. In production, failed messages should land in a DLQ for inspection and reprocessing without data loss.
+- **Provider authentication** — The endpoints are currently open. Each provider should authenticate via an API key header or mTLS certificate to prevent unauthorized message injection.
+- **Multi-market support** — The service currently handles only the 1X2 market. The hexagonal architecture makes it straightforward to extend the domain model to support Asian Handicap, Over/Under, and other market types without touching the provider adapters.
