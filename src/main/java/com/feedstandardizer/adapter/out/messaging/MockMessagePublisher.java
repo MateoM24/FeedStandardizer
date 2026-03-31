@@ -28,7 +28,7 @@ public class MockMessagePublisher implements MessagePublisherPort {
     public void publish(StandardFeedMessage message) {
         try {
             String json = objectMapper.writeValueAsString(new MessageEnvelope(message));
-            log.info("[MOCK QUEUE] Published message → {}", json);
+            log.info("[MOCK QUEUE] Published message -> {}", json);
         } catch (JacksonException e) {
             log.error("[MOCK QUEUE] Failed to serialize message for eventId={}", message.eventId(), e);
         }

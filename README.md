@@ -167,11 +167,11 @@ Replace `MockMessagePublisher` with a real adapter (Kafka, RabbitMQ, etc.) to co
 
 All errors follow [RFC 7807 Problem Details](https://www.rfc-editor.org/rfc/rfc7807):
 
-| Scenario | HTTP Status |
-|---|---|
-| Unknown `msg_type` / `type` value | `422 Unprocessable Entity` |
-| Missing required fields or invalid values | `400 Bad Request` |
-| Bean validation failure | `400 Bad Request` |
+| Scenario | HTTP Status                 |
+|---|-----------------------------|
+| Unknown `msg_type` / `type` value | `422 Unprocessable Content` |
+| Missing required fields or invalid values | `400 Bad Request`           |
+| Bean validation failure | `400 Bad Request`           |
 
 ---
 
@@ -198,3 +198,31 @@ curl -X POST http://localhost:8080/provider-beta/feed \
   -H "Content-Type: application/json" \
   -d '{"type":"SETTLEMENT","event_id":"ev456","result":"away"}'
 ```
+
+## PowerShell examples (Windows)
+
+```powershell
+# ProviderAlpha — ODDS_CHANGE
+Invoke-RestMethod -Method POST -Uri "http://localhost:8080/provider-alpha/feed" `
+  -ContentType "application/json" `
+  -Body '{"msg_type":"odds_update","event_id":"ev123","values":{"1":2.0,"X":3.1,"2":3.8}}'
+
+# ProviderAlpha — BET_SETTLEMENT
+Invoke-RestMethod -Method POST -Uri "http://localhost:8080/provider-alpha/feed" `
+  -ContentType "application/json" `
+  -Body '{"msg_type":"settlement","event_id":"ev123","outcome":"1"}'
+
+# ProviderBeta — ODDS_CHANGE
+Invoke-RestMethod -Method POST -Uri "http://localhost:8080/provider-beta/feed" `
+  -ContentType "application/json" `
+  -Body '{"type":"ODDS","event_id":"ev456","odds":{"home":1.95,"draw":3.2,"away":4.0}}'
+
+# ProviderBeta — BET_SETTLEMENT
+Invoke-RestMethod -Method POST -Uri "http://localhost:8080/provider-beta/feed" `
+  -ContentType "application/json" `
+  -Body '{"type":"SETTLEMENT","event_id":"ev456","result":"away"}'
+```
+
+## Additional ideas:
+- I would probably do Kafka topic per event type instead of sending them to a common one.
+- I would dockerize it as well of course to deploy for example Kubernetes.
